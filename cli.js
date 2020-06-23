@@ -17,6 +17,7 @@ const lifecyleEvents = [
 ];
 
 fs.readFile(`./${args[0]}.component.ts`, 'utf8', (err, data) => {
+  console.log(err)
   if (err) {
     return fs.readFile(
       `./${args[0]}/${args[0]}.component.ts`,
