@@ -16,20 +16,13 @@ const lifecyleEvents = [
   'ngOnDestroy',
 ];
 
-fs.readFile(`./${args[0]}.component.ts`, 'utf8', (err, data) => {
-  console.log(err)
-  if (err) {
-    return fs.readFile(
-      `./${args[0]}/${args[0]}.component.ts`,
-      'utf8',
-      (err, data) => {
-        if (err) {
-          return console.error(err);
-        }
+const path = args.length > 0  ? args.find(arg => arg.startsWith('path=')).slice(5) : ''
 
-        start(data);
-      }
-    );
+console.log(process.cwd())
+
+fs.readFile(`./${path}.component.ts`, 'utf8', (err, data) => {
+  if (err) {
+    return console.log(err)
   }
 
   start(data);
@@ -99,16 +92,20 @@ function funcToText(functions) {
   return functions
     .map((func) => {
       return `
-describe('${func.funcName}'), () => {
+describe('${func.funcName}', () => {
   /*
   * Params:
   * ${paramsToText(func.params)}
   */
 
-  it('should work', ()=> {})
-  it('shouldnt work', ()=> {})
-}
-`;
+  it('should work', ()=> {
+    expect(component.${func.funcName}(${paramNames(func.params)})).toBe()
+  })
+
+  it('shouldnt work', ()=> {
+    expect(component.${func.funcName}(${paramNames(func.params)})).not.toBe()
+  })
+})`;
     })
     .join('\n');
 }
@@ -122,4 +119,8 @@ function paramsToText(params) {
         }`
     )
     .join('\n  * ');
+}
+
+function paramNames(params) {
+  return params.map(param => param.paramName).join(', ')
 }
